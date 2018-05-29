@@ -2,11 +2,40 @@ from match import play_match
 from collections import defaultdict
 import itertools
 
-class Bracket:
+
+class KnockOut:
     def __init__(self, teams):
+        self.champion = None
         self.root = None
         self.teams = teams
+        self.tree = [[Node(team) for team in self.teams]]
         
+    def _play_knockout(self, nodes):
+        if len(teams) == 1:
+            self.champion = nodes[0].team
+            self.root = nodes[0]
+        else:
+            next_round = []
+            for a, b in zip(nodes, nodes[1:])[::2]:
+                winner, loser = play_match(a.team, b.team, draw_possible=False)
+                team_through = Node(winner, a, b)
+                a.parent = team_through
+                b.parent = team_through
+                next_round.append(team_through)
+            self.rounds.append(next_round)
+            self._play_knockout(self.tree[-1])
+    
+    def play_knockout(self):
+        self._play_knockout(self.tree[-1])
+
+        
+class Node:
+    def __init__(self, team, lchild=None, rchild=None):
+        self.team = team
+        self.parent = None
+        self.lchild = lchild
+        self.rchild = rchild
+
 
 class Team:
     def __init__(self, name, rating):
@@ -20,7 +49,10 @@ class Team:
     def add_draw_points(self):
         self.points += 1
         
+    def reset_points(self):
+        self.points = 0
 
+        
 class Group:
     def __init__(self, name, teams):
         self.name = name
@@ -46,3 +78,4 @@ class Group:
             else:
                 self._add_result(outcome[0], outcome[1])
                 
+        self.teams = sorted(self.teams, key=lambda x: x.points, reverse=True)
