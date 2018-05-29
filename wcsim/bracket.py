@@ -1,5 +1,6 @@
 from match import play_match
 from collections import defaultdict
+from random import shuffle
 import itertools
 
 
@@ -15,22 +16,40 @@ class KnockOut:
             team_through = winner
             next_stage.append(team_through)
         if len(next_stage) > 1:
-            self.rounds.append(zip(next_stage, next_stage[1:][::2]))
+            self.rounds.append(zip(next_stage, next_stage[1:])[::2])
             self._play_knockout(self.rounds[-1])
         else:
             self.champion = next_stage[0]
     
     def play_knockout(self):
         self._play_knockout(self.rounds[-1])
-
-        
-class Node:
-    def __init__(self, team, lchild=None, rchild=None):
-        self.team = team
-        self.parent = None
-        self.lchild = lchild
-        self.rchild = rchild
-
+    
+    @staticmethod
+    def _determine_round(stage):
+        num_matches = len(stage)
+        if num_matches == 1:
+            return 'Final'
+        elif num_matches == 2:
+            return 'Semi-finals'
+        elif num_matches == 4:
+            return 'Quarter-finals'
+        else:
+            return 'Round of {}'.format(2*num_matches)
+    
+    def _print_stage(self, stage):
+        stage_name = self._determine_round(stage)
+        print stage_name
+        print '==========================='
+        for match in stage:
+            print '{:<12} v {:>12}'.format(match[0].name, match[1].name)
+        print '==========================='
+            
+    def print_rounds(self):
+        for stage in self.rounds:
+            self._print_stage(stage)
+        print "Winner: {}".format(self.champion.name)
+        print '==========================='
+            
 
 class Team:
     def __init__(self, name, rating):
@@ -72,7 +91,8 @@ class Group:
                 self._add_result(a, b, is_draw=True)
             else:
                 self._add_result(outcome[0], outcome[1])
-                
+        
+        shuffle(self.teams)
         self.teams = sorted(self.teams, key=lambda x: x.points, reverse=True)
         
     def print_table(self):

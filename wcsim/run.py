@@ -1,4 +1,4 @@
-from bracket import Team, Node, KnockOut, Group
+from bracket import Team, KnockOut, Group
 import config
 
 def run_tournament(config, print_results=True):
@@ -9,11 +9,11 @@ def run_tournament(config, print_results=True):
     RATINGS = config.RATINGS
     KNOCKOUT_CONFIG = config.RO16
     
-    groups = [
+    groups = sorted([
         Group(name,
               [Team(country, RATINGS[country]) for country in teams])
         for name, teams in GROUPS_CONFIG.iteritems()
-    ]
+    ], key=lambda x: x.name)
     
     for g in groups:
         g.play_fixtures()
