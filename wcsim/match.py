@@ -1,5 +1,7 @@
 from __future__ import division
 import numpy as np
+from scipy.stats import norm
+import math
 
 
 def play_match(a, b, draw_possible=True):
@@ -11,7 +13,7 @@ def play_match(a, b, draw_possible=True):
     a_winprob = 1 / (1 + 10**(rating_diff / 400))
     b_winprob = 1 - a_winprob
     if draw_possible:
-        draw_prob = 4 * a_winprob * b_winprob / 3
+        draw_prob = norm.pdf(rating_diff/200, 0, math.e)
         b_winprob = b_winprob - 0.5 * draw_prob
         a_winprob = a_winprob - 0.5 * draw_prob
         
