@@ -11,7 +11,7 @@ class KnockOut:
         self.tree = [[Node(team) for team in self.teams]]
         
     def _play_knockout(self, nodes):
-        if len(teams) == 1:
+        if len(nodes) == 1:
             self.champion = nodes[0].team
             self.root = nodes[0]
         else:
