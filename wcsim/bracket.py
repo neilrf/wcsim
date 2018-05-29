@@ -4,29 +4,24 @@ import itertools
 
 
 class KnockOut:
-    def __init__(self, teams):
+    def __init__(self, first_stage):
         self.champion = None
-        self.root = None
-        self.teams = teams
-        self.tree = [[Node(team) for team in self.teams]]
+        self.rounds = [first_stage]
         
-    def _play_knockout(self, nodes):
-        if len(nodes) == 1:
-            self.champion = nodes[0].team
-            self.root = nodes[0]
+    def _play_knockout(self, stage):
+        next_stage = []
+        for (a, b) in stage:
+            winner, loser = play_match(a, b, draw_possible=False)
+            team_through = winner
+            next_stage.append(team_through)
+        if len(next_stage) > 1:
+            self.rounds.append(zip(next_stage, next_stage[1:][::2]))
+            self._play_knockout(self.rounds[-1])
         else:
-            next_round = []
-            for a, b in zip(nodes, nodes[1:])[::2]:
-                winner, loser = play_match(a.team, b.team, draw_possible=False)
-                team_through = Node(winner, a, b)
-                a.parent = team_through
-                b.parent = team_through
-                next_round.append(team_through)
-            self.rounds.append(next_round)
-            self._play_knockout(self.tree[-1])
+            self.champion = next_stage[0]
     
     def play_knockout(self):
-        self._play_knockout(self.tree[-1])
+        self._play_knockout(self.rounds[-1])
 
         
 class Node:
