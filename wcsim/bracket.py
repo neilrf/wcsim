@@ -79,3 +79,12 @@ class Group:
                 self._add_result(outcome[0], outcome[1])
                 
         self.teams = sorted(self.teams, key=lambda x: x.points, reverse=True)
+        
+    def print_table(self):
+        print '==============='
+        print 'Group {}'.format(self.name)
+        print '==============='
+        for team in self.teams:
+            print '{:<12}  {}'.format(team.name, team.points)
+        print '==============='
+
