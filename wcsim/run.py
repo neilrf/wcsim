@@ -1,5 +1,7 @@
 from bracket import Team, KnockOut, Group
 import config
+import collections
+import pandas as pd
 
 def run_tournament(config, print_results=True):
     """
@@ -29,3 +31,38 @@ def run_tournament(config, print_results=True):
     knockout = KnockOut(first_round)
     knockout.play_knockout()
     return knockout
+    
+
+def mc_wc(config, num_runs=10):
+    teams = [team for group in config.GROUPS.values() for team in group]
+    
+    def empty_counter(items_list):
+        return collections.Counter({
+            item: 0 for item in items_list
+        })
+        
+    results = {
+        'Round of 16': empty_counter(teams),
+        'Quarter-finals': empty_counter(teams),
+        'Semi-finals': empty_counter(teams),
+        'Final': empty_counter(teams),
+        'Winner': empty_counter(teams)
+    }
+    
+    for i in range(num_runs):
+        knockout = run_tournament(config,False)
+        round_teams = knockout.teams_per_round()
+    
+        for round, nations in round_teams.iteritems():
+            results[round].update(nations)
+            
+    results_df = pd.DataFrame(results)
+    results_df = 100*results_df/num_runs
+    columns = ['Round of 16',
+               'Quarter-finals',
+               'Semi-finals',
+               'Final',
+               'Winner']
+    results_df = results_df[columns]
+            
+    return results_df.sort_values('Winner', ascending=False)

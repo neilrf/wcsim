@@ -49,6 +49,18 @@ class KnockOut:
             self._print_stage(stage)
         print "Winner: {}".format(self.champion.name)
         print '==========================='
+    
+    @staticmethod
+    def _get_teams_in_round(stage):
+        return [team.name for match in stage for team in match]
+        
+    def teams_per_round(self):
+        round_teams = {}
+        for stage in self.rounds:
+            stage_name = self._determine_round(stage)
+            round_teams[stage_name] = self._get_teams_in_round(stage)
+        round_teams['Winner'] = [self.champion.name]
+        return round_teams
             
 
 class Team:
