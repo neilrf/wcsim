@@ -14,6 +14,7 @@ class KnockOut:
         for (a, b) in stage:
             winner, loser = play_match(a, b, draw_possible=False)
             team_through = winner
+            winner.add_win()
             next_stage.append(team_through)
         if len(next_stage) > 1:
             self.rounds.append(zip(next_stage, next_stage[1:])[::2])
@@ -68,6 +69,7 @@ class Team:
         self.name = name
         self.rating = rating
         self.points = 0
+        self.wins = 0
         
     def add_win_points(self):
         self.points += 3
@@ -77,6 +79,9 @@ class Team:
         
     def reset_points(self):
         self.points = 0
+        
+    def add_win(self):
+        self.wins += 1
 
         
 class Group:
@@ -95,6 +100,7 @@ class Group:
             self.results[winner.name][loser.name] = 'W'
             self.results[loser.name][winner.name] = 'L'
             winner.add_win_points()
+            winner.add_win()
         
     def play_fixtures(self):
         for a, b in itertools.combinations(self.teams, 2):
